@@ -77,6 +77,24 @@ async def reboot(ctx, device):
             await bot.send_message(discord.Object(id=bot_channel), stdout.decode("utf-8") )
         except:
             await bot.send_message(discord.Object(id=bot_channel), "No device named " + name + " found.")
+
+@bot.command(pass_context=True)
+async def shutdown(ctx, device):
+    """(p)shutdown <device_name> - shutdown device. Replace <device_name> with <all> to shutdown all devices."""
+    name = str(device)
+    if name == 'all':
+        for d in devices:
+            dname = devices[d]
+            MyOut = subprocess.Popen(['idevicediagnostics', '-u', dname, 'shutdown'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+            stdout,stderr = MyOut.communicate()
+            await bot.send_message(discord.Object(id=bot_channel), stdout.decode("utf-8") )
+    else:
+        try:
+            MyOut = subprocess.Popen(['idevicediagnostics', '-u', devices.get(name), 'shutdown'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+            stdout,stderr = MyOut.communicate()
+            await bot.send_message(discord.Object(id=bot_channel), stdout.decode("utf-8") )
+        except:
+            await bot.send_message(discord.Object(id=bot_channel), "No device named " + name + " found.")
             
 @bot.command(pass_context=True)
 async def sc(ctx, device):
